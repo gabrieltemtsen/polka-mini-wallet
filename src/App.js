@@ -1,6 +1,6 @@
 import logo from './logo.gif';
 import './App.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import {
   web3Enable, 
@@ -13,8 +13,8 @@ import { ApiPromise, WsProvider } from '@polkadot/api'
 function App() {
   const [activeExtension, setActiveExtension] = useState([]);
   const [accountConnected, setAccountConnected] = useState([]);
-  
-
+  const [allAccounts, setAllAccounts] = useState([]); 
+  const [currentChain, setCurrentChain] = useState('');
   // connect Polkadot-sdk extensions
   const connectExtension = async () => {
     
@@ -27,6 +27,30 @@ function App() {
     setAccountConnected(accounts)
   }
 
+  const fetchData = async () => {
+    if (accountConnected.length === 0) return;
+
+    const wsProvider = new WsProvider('wss://westend-rpc.polkadot.io');
+    const api = await ApiPromise.create({ provider: wsProvider });
+    const chainInfo = await api.registry.getChainProperties();
+    setCurrentChain(chainInfo.tokenSymbol.toString());
+
+
+    let tempAcc = []
+    for(let i = 0; i < accountConnected.length; i++){
+      const { nonce, data: balance } = await api.query.system.account(accountConnected[i].address)
+      tempAcc.push({address: accountConnected[i].address, balance: balance, nonce: nonce})
+    } 
+    console.log(tempAcc)
+    setAllAccounts(tempAcc);
+  };
+
+ 
+
+  useEffect(() => {
+    fetchData();
+  }, [accountConnected]);
+
   // burn 1337 WND from first connected account  
   const initTransaction = async () => {
 
@@ -34,7 +58,6 @@ function App() {
     const wsProvider = new WsProvider('wss://westend-rpc.polkadot.io');
     // const wsProvider = new WsProvider('wss://127.0.0.1:9944'); // for a local node
     const api = await ApiPromise.create({ provider: wsProvider });
-
 
     // grab injected object
     const injector = await web3FromAddress(accountConnected[0].address);
@@ -53,7 +76,6 @@ function App() {
         console.log(':( transaction failed', error);
     });  
 }
-  
 
   return (
     <div className="App">
@@ -78,6 +100,17 @@ function App() {
                 </div>
               </a>
               <br/>
+            </div>
+            <div>
+              <h4>NFTs in the Account:</h4>
+              {allAccounts.map((account)=>(
+                <div>
+                  <p>Address: {account.address}</p>
+                  <p>Balance: {Number(account.balance.free.toString()) / 1000000000000 }</p>
+                </div>
+              
+              ))}
+              
             </div>
           </>
         ):(
