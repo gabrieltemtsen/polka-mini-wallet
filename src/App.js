@@ -36,7 +36,7 @@ function App() {
     setCurrentChain(chainInfo.tokenSymbol.toString());
 
 
-    let tempAcc = []
+    let tempAcc = [];
     for(let i = 0; i < accountConnected.length; i++){
       const { nonce, data: balance } = await api.query.system.account(accountConnected[i].address)
       tempAcc.push({address: accountConnected[i].address, balance: balance, nonce: nonce})
@@ -107,6 +107,7 @@ function App() {
                 <div>
                   <p>Address: {account.address}</p>
                   <p>Balance: {Number(account.balance.free.toString()) / 1000000000000 }</p>
+                  <p> NFTs:  </p>
                 </div>
               
               ))}
