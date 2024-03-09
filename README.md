@@ -16,7 +16,7 @@ Polka Nano Wallet is a decentralized application (dApp) inspired by the Front-en
 - **Backend**: Polkadot.js API for interacting with the Polkadot network
 - **Authentication**: Integration with Talisman wallet authentication mechanisms
 - **Deployment**: deployed using Vercel
-- - **Live Demo**: [Polka-Nano-Wallet](https://polka-nano-wallet.vercel.app)
+- **Live Demo**: [Polka-Nano-Wallet](https://polka-nano-wallet.vercel.app)
 
 
 
