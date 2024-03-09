@@ -39,7 +39,7 @@ function App() {
     let tempAcc = [];
     for(let i = 0; i < accountConnected.length; i++){
       const { nonce, data: balance } = await api.query.system.account(accountConnected[i].address)
-      tempAcc.push({address: accountConnected[i].address, balance: balance, nonce: nonce})
+      tempAcc.push({metaName: accountConnected[i].meta.name, address: accountConnected[i].address, balance: balance, nonce: nonce})
     } 
     console.log(tempAcc)
     setAllAccounts(tempAcc);
@@ -85,7 +85,7 @@ function App() {
           Encode Hackathon Workshop
         </h2>
       </header>
-      <div className="App-body">
+      {/* <div className="App-body">
         { activeExtension.length > 0 ? (
           <>
             <h4>Selected Extension: {activeExtension[0].name}</h4>
@@ -124,8 +124,94 @@ function App() {
             <br/>
           </div>
         )}
-      </div>
+      </div> */}
 
+
+
+{activeExtension.length > 0 ? (
+  <div className='wallet'>
+<div className='walletSection'>
+        <div className="walletContainer">
+        <div className='walletHeader'>
+          <h1 className='walletHeaderTitle'>Your Mini Wallet</h1>
+          </div>
+
+          <div className='walletTabs'>
+            <div className="walletTabsContainer">
+               <button className='walletTab-1'>
+                <h1 className="walletTab-1Title">Accounts</h1>
+              </button>
+              <button className="walletTab-2">
+                <h1 className="walletTab-2Title">Transaction History</h1>
+              </button>
+            </div>
+          </div>
+            {allAccounts.map((account)=>(
+                <div className="accountDetailsContainer">
+                <div className="accountAddressSection">
+                  <div className="accountAddressBox">
+                     <span className="accountName">{account.metaName}</span>
+                     <span className="accountAddress"> {account.address} </span>
+                  </div>
+                </div>
+                <span className="accountBalance">
+                  { (Number(account.balance.free.toString()) / 1000000000000).toFixed(3) } { currentChain.replace(/\[|\]/g, '') }
+                </span>
+                
+              </div>
+             
+
+            ))}
+        
+          
+        
+          <div className="transfer-section">
+            <span className='transferTitle'>
+              Transfer Tokens
+            </span>
+          </div>
+
+         
+
+          <form>
+           <div className="form-control">
+           <input className='form-input' type="text" placeholder="Enter Address"></input>
+           </div>
+           <div className="form-control">
+           <input className='form-input' type="text" placeholder="Enter Amount"></input>
+           </div>
+          </form>
+         <div className='btn-area'>
+          <button className='submit-button'>
+            Send
+          </button>
+
+         </div>
+
+          
+        </div>
+         
+
+
+    </div>
+
+</div>
+): (
+  <div className='connectWallet'>
+    <a href="#connect" onClick={() => connectExtension()}>
+      <div className='btn'>
+     Connect Wallet
+      </div>
+    </a>
+    <br/>
+  </div>
+
+)}
+
+
+
+
+  
     </div>
   );
 }
