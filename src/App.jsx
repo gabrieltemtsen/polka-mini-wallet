@@ -9,12 +9,51 @@ import {
 } from '@polkadot/extension-dapp';
 
 import { ApiPromise, WsProvider } from '@polkadot/api'
+const { Keyring } = require('@polkadot/keyring');
 
 function App() {
   const [activeExtension, setActiveExtension] = useState([]);
   const [accountConnected, setAccountConnected] = useState([]);
   const [allAccounts, setAllAccounts] = useState([]); 
   const [currentChain, setCurrentChain] = useState('');
+  const [selectedAccount, setSelectedAccount] = useState('');
+  const [receipientAddress, setReceipientAddress] = useState('');
+  const [amountToSend, setAmountToSend] = useState('');
+  const [txLoading, setTxLoading] = useState(false);
+  
+
+
+
+  const sendToken = async() => {
+    console.log(receipientAddress, amountToSend, selectedAccount)
+    if(!receipientAddress || !amountToSend || !selectedAccount)  return alert('Please fill all fields');
+
+    setTxLoading(true);
+
+    const wsProvider = new WsProvider('wss://westend-rpc.polkadot.io');
+    const api = await ApiPromise.create({ provider: wsProvider });
+    // Construct the keyring after the API (crypto has an async init)
+
+   // grab injected object
+   const injector = await web3FromAddress(selectedAccount);
+   const tx = api.tx.balances.transferAllowDeath(receipientAddress, Number(amountToSend) * 1000000000000)
+
+    // propogate tx
+    tx.signAndSend(selectedAccount, { signer: injector.signer }, ({ status }) => {
+      if (status.isInBlock) {
+          console.log(`Completed at block hash #${status.asInBlock.toString()}`);
+          fetchData();
+          alert('Txn successfull')
+          setTxLoading(false);
+      } else {
+        setTxLoading(false);
+          console.log(`Current status: ${status.type}`);      }
+    }).catch((error) => {
+        console.log(':( transaction failed', error);
+        setTxLoading(false)
+    });  
+
+  }
   // connect Polkadot-sdk extensions
   const connectExtension = async () => {
     
@@ -77,6 +116,16 @@ function App() {
     });  
 }
 
+const copyToClipboard = (text) => {
+  navigator.clipboard.writeText(text)
+    .then(() => alert('Address copied to clipboard'))
+    .catch((error) => console.error('Could not copy address: ', error));
+};
+
+const shortenAddress = (address) => {
+  return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
+};
+
   return (
     <div className="App">
       <header className="App-header">
@@ -85,49 +134,6 @@ function App() {
           Encode Hackathon Workshop
         </h2>
       </header>
-      {/* <div className="App-body">
-        { activeExtension.length > 0 ? (
-          <>
-            <h4>Selected Extension: {activeExtension[0].name}</h4>
-            Account:
-            {accountConnected.map(account => 
-                <p>{account.meta.name} : {account.address}</p>
-            )}
-            <div>
-              <a href="#init" onClick={() => initTransaction()}>
-                <div className='btn'>
-                  Burn 1337 Westies
-                </div>
-              </a>
-              <br/>
-            </div>
-            <div>
-              <h4>NFTs in the Account:</h4>
-              {allAccounts.map((account)=>(
-                <div>
-                  <p>Address: {account.address}</p>
-                  <p>Balance: {Number(account.balance.free.toString()) / 1000000000000 }</p>
-                  <p> NFTs:  </p>
-                </div>
-              
-              ))}
-              
-            </div>
-          </>
-        ):(
-          <div>
-            <a href="#connect" onClick={() => connectExtension()}>
-              <div className='btn'>
-              Connect Wallet
-              </div>
-            </a>
-            <br/>
-          </div>
-        )}
-      </div> */}
-
-
-
 {activeExtension.length > 0 ? (
   <div className='wallet'>
 <div className='walletSection'>
@@ -149,10 +155,12 @@ function App() {
             {allAccounts.map((account)=>(
                 <div className="accountDetailsContainer">
                 <div className="accountAddressSection">
-                  <div className="accountAddressBox">
-                     <span className="accountName">{account.metaName}</span>
-                     <span className="accountAddress"> {account.address} </span>
-                  </div>
+                <div className="accountAddressBox">
+                <span className="accountName">{account.metaName}</span>
+                <span className="accountAddress" onClick={() => copyToClipboard(account.address)}>
+                  {shortenAddress(account.address)}
+                </span>
+              </div>
                 </div>
                 <span className="accountBalance">
                   { (Number(account.balance.free.toString()) / 1000000000000).toFixed(3) } { currentChain.replace(/\[|\]/g, '') }
@@ -171,28 +179,32 @@ function App() {
             </span>
           </div>
 
+              <label className='accSelect' htmlFor="">Select Acount: </label>
+          <select onChange={(e)=> {setSelectedAccount(e.target.value)}}  >
+            
+           {allAccounts.map((account)=> (
+              <option value={account.address}>{account.metaName}</option>
+           ))}
+          </select>
+
          
 
           <form>
            <div className="form-control">
-           <input className='form-input' type="text" placeholder="Enter Address"></input>
+           <input onChange={(e)=> {setReceipientAddress(e.target.value)}} className='form-input' type="text" placeholder="Enter Address"></input>
            </div>
            <div className="form-control">
-           <input className='form-input' type="text" placeholder="Enter Amount"></input>
+           <input onChange={(e)=> {setAmountToSend(e.target.value)}} className='form-input' type="text" placeholder="Enter Amount"></input>
            </div>
           </form>
          <div className='btn-area'>
-          <button className='submit-button'>
-            Send
+          <button onClick={sendToken} className='submit-button'>
+            {txLoading ? 'Sending....' : 'Send'}
           </button>
 
-         </div>
-
-          
+         </div>  
         </div>
          
-
-
     </div>
 
 </div>

@@ -276,6 +276,7 @@ form {
 }
 .form-input {
   display: flex;
+
 width: 328px;
 height: 26px;
 padding: 16px;
@@ -283,7 +284,8 @@ justify-content: space-between;
 align-items: flex-start;
 flex-shrink: 0;
 border-radius: 12px;
-background: #F0F2F5;
+background: #dee4ee;
+color: #0f4daa;
 }
 
 .btn-area {
@@ -294,6 +296,15 @@ padding: 12px 16px;
 align-items: flex-start;
 flex-shrink: 0;
 
+}
+.accSelect {
+  display: flex;
+width: 328px;
+height: 40px;
+padding: 0px 16px;
+justify-content: space-between;
+align-items: center;
+flex-shrink: 0;
 }
 
 .submit-button {
