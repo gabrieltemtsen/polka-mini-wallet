@@ -131,7 +131,7 @@ const shortenAddress = (address) => {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <h2>
-          Polka Mini Wallet
+          Polka Nano Wallet
         </h2>
       </header>
 {activeExtension.length > 0 ? (
