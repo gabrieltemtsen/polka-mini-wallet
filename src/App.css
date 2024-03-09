@@ -318,19 +318,29 @@ flex-shrink: 0;
 border-radius: 12px;
 background: #1A80E5;
 }
-.transfer-section{
+.transfer-section {
   margin-top: 20px;
-
-
 }
+
 .transferTitle {
-  color: #121417;
-font-feature-settings: 'dlig' on;
-font-family: "Work Sans";
-font-size: 18px;
-font-style: normal;
-font-weight: 700;
-line-height: 22.5px; /* 125% */
-letter-spacing: -0.27px;
+  font-size: 18px;
+  font-weight: bold;
 }
 
+.accSelect {
+  display: block;
+  margin-top: 10px;
+  font-size: 16px;
+}
+
+.accountSelect {
+  width: 50%;
+  padding: 8px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.accountSelect option {
+  font-size: 16px;
+}

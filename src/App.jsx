@@ -131,7 +131,7 @@ const shortenAddress = (address) => {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <h2>
-          Encode Hackathon Workshop
+          Polka Mini Wallet
         </h2>
       </header>
 {activeExtension.length > 0 ? (
@@ -153,7 +153,7 @@ const shortenAddress = (address) => {
             </div>
           </div>
             {allAccounts.map((account)=>(
-                <div className="accountDetailsContainer">
+                <div key={account.address} className="accountDetailsContainer">
                 <div className="accountAddressSection">
                 <div className="accountAddressBox">
                 <span className="accountName">{account.metaName}</span>
@@ -173,19 +173,19 @@ const shortenAddress = (address) => {
         
           
         
-          <div className="transfer-section">
-            <span className='transferTitle'>
-              Transfer Tokens
-            </span>
-          </div>
+        <div className="transfer-section">
+  <span className='transferTitle'>
+    Transfer Tokens
+  </span>
+</div>
 
-              <label className='accSelect' htmlFor="">Select Acount: </label>
-          <select onChange={(e)=> {setSelectedAccount(e.target.value)}}  >
-            
-           {allAccounts.map((account)=> (
-              <option value={account.address}>{account.metaName}</option>
-           ))}
-          </select>
+<label className='accSelect' htmlFor="">Select Account: </label>
+<select className="accountSelect" onChange={(e)=> {setSelectedAccount(e.target.value)}} defaultValue="">
+  <option value="" disabled>Select an Account</option>
+  {allAccounts.map((account)=> (
+    <option key={account.address} value={account.address}>{account.metaName}</option>
+  ))}
+</select>
 
          
 
